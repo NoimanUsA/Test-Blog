@@ -95,6 +95,9 @@ export default {
         id: commentId,
       });
       updateComments(noteId, comments.value);
+
+      newCommentAuthor.value = null;
+      newCommentText.value = null;
     }
 
     function removeComment(id) {
