@@ -1,16 +1,24 @@
 <template>
+  <q-layout view="hHh lpR lfr" class="bg-light-blue-10 text-grey-1">
+    <q-header class="bg-primary text-white bg-light-blue-9 row justify-center shadow-4">
+      <q-tabs align="left" name="navigation" class="col-8">
+        <q-route-tab to="/">На главную</q-route-tab>
+        <q-route-tab :to="{ name: 'write-new-note' }">Создать новую запись</q-route-tab>
+      </q-tabs>
+    </q-header>
+    <q-page-container class="row justify-center col-8">
+      <q-page padding class="notes col-8 bg-light-blue-9 shadow-4">
+        <router-view />
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
-
-export default defineComponent({
+export default {
   name: 'MainLayout',
-
-  components: {
-  },
-
-  setup() {
-  },
-});
+  setup() {},
+};
 </script>
+
+<style lang="scss" scoped></style>

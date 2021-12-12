@@ -1,3 +1,4 @@
+const path = require('path');
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
  * the ES6 features that are supported by your Node version. https://node.green/
@@ -14,6 +15,7 @@ const { configure } = require('quasar/wrappers');
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
+
   supportTS: false,
 
   // https://quasar.dev/quasar-cli/prefetch-feature
