@@ -1,6 +1,11 @@
 const routes = [
   {
     path: '/',
+    redirect: '/notes',
+  },
+  {
+    path: '/notes',
+    name: 'notes',
     component: () => import('pages/Notes.vue'),
   },
   {
@@ -18,6 +23,10 @@ const routes = [
     path: '/rewrite-note/:id',
     name: 'rewrite-note',
     component: () => import('pages/RewriteNote.vue'),
+  },
+  {
+    path: '/:catchAll(.*)',
+    redirect: '/notes',
   }];
 
 export default routes;

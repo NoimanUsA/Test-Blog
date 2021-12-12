@@ -33,7 +33,7 @@
       </div>
       <q-form class="q-mt-md column q-gutter-md" @submit.prevent="addNewComment">
         <q-input
-          v-model="author"
+          v-model="newCommentAuthor"
           dense
           name="title"
           color="light-blue-10"
@@ -46,7 +46,7 @@
           <template #label> Ваше имя </template>
         </q-input>
         <q-input
-          v-model="newComment"
+          v-model="newCommentText"
           dense
           name="header"
           color="light-blue-10"
@@ -61,7 +61,7 @@
           <template #label> Текст комментария </template>
         </q-input>
         <div class="row">
-          <q-btn type="submit" color="light-blue-8" glossy>Сохранить</q-btn>
+          <q-btn :disabled="!errors" type="submit" color="light-blue-8" glossy>Сохранить</q-btn>
         </div>
       </q-form>
     </div>
@@ -73,7 +73,7 @@ import { getNote, removeNote } from 'src/helpers/notes';
 import { getNoteComments, updateComments } from 'src/helpers/comments';
 
 import { useRoute, useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { uuid } from 'vue-uuid';
 
 export default {
@@ -83,14 +83,15 @@ export default {
     const noteId = useRoute().params.id;
     const note = ref({});
     const comments = ref([]);
+    const newCommentAuthor = ref(null);
+    const newCommentText = ref(null);
+    const errors = computed(() => newCommentText.value && newCommentAuthor.value);
 
-    const author = ref(null);
-    const newComment = ref(null);
     function addNewComment() {
       const commentId = uuid.v1();
       comments.value.push({
-        author: author.value,
-        text: newComment.value,
+        author: newCommentAuthor.value,
+        text: newCommentText.value,
         id: commentId,
       });
       updateComments(noteId, comments.value);
@@ -108,6 +109,7 @@ export default {
     }
     onMounted(() => {
       note.value = getNote(noteId);
+      if (!note.value) router.push('/');
       comments.value = getNoteComments(noteId);
     });
 
@@ -115,11 +117,12 @@ export default {
       note,
       noteId,
       comments,
-      author,
-      newComment,
+      newCommentAuthor,
+      newCommentText,
       addNewComment,
       removeComment,
       removeCurrentNote,
+      errors,
     };
   },
 };

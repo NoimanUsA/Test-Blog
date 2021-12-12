@@ -12,6 +12,7 @@
         label
         outlined
         clearable
+        :error="errors.title"
       >
         <template #label> Заголовок </template>
       </q-input>
@@ -26,6 +27,7 @@
         label
         outlined
         clearable
+        :error="errors.shortDesc"
       >
         <template #label> Краткое описание </template>
       </q-input>
@@ -35,12 +37,12 @@
         v-model="text"
         name="header"
         color="light-blue-10"
-        error="false"
         bg-color="grey-1"
         label
         outlined
         type="textarea"
         clearable
+        :error="errors.text"
       >
         <template #label> Текст записи </template>
       </q-input>
@@ -64,8 +66,21 @@ export default {
     const title = ref(null);
     const text = ref(null);
     const shortDesc = ref(null);
+    const errors = ref({
+      text: false,
+      title: false,
+      shortDesc: false,
+    });
 
     function updateNotes() {
+      if (!title.value || !text.value || !shortDesc.value) {
+        errors.value = {
+          text: !text.value,
+          title: !title.value,
+          shortDesc: !shortDesc.value,
+        };
+        return false;
+      }
       const newNote = {
         title: title.value,
         text: text.value,
@@ -73,6 +88,7 @@ export default {
       };
       addNote(newNote);
       router.push('/');
+      return true;
     }
 
     return {
@@ -80,6 +96,7 @@ export default {
       text,
       shortDesc,
       updateNotes,
+      errors,
     };
   },
 };

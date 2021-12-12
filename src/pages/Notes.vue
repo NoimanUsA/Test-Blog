@@ -3,7 +3,7 @@
     <div class="row justify-end"></div>
     <ul class="notes__list q-mt-md row q-gutter-md" v-if="notesLength > 0">
       <router-link
-        class="column notes__note q-pa-md col-md-4 col-sm-12 shadow-2 text-grey-1 rounded-borders"
+        class="column notes__note q-pa-md shadow-2 text-grey-1 rounded-borders"
         v-for="(note, id) in notesList"
         :key="id"
         :to="{
@@ -19,7 +19,7 @@
         <div class="q-mt-md">Комментариев : {{ getCommentsLength(id) }}</div>
       </router-link>
     </ul>
-    <div v-else class="text-h3">Нет ни одной записи</div>
+    <div v-else class="text-h4 text-center">Нет ни одной записи...</div>
   </div>
 </template>
 
