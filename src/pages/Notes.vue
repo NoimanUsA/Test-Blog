@@ -1,52 +1,51 @@
 <template>
-  <q-page padding class="notes col-8 bg-light-blue-9">
+  <div class="notes">
     <div class="row justify-end"></div>
-    <ul class="notes__list q-mt-md">
+    <ul class="notes__list q-mt-md row q-gutter-md" v-if="notesLength > 0">
       <router-link
-        class="notes__note q-pa-md column shadow-2 text-grey-1"
-        v-for="note in notesList" :key="note._id" :to="{ name: 'note', params: { id: note._id } }"
+        class="column notes__note q-pa-md col-md-4 col-sm-12 shadow-2 text-grey-1 rounded-borders"
+        v-for="(note, id) in notesList"
+        :key="id"
+        :to="{
+          name: 'note',
+          params: {
+            id: id,
+          },
+        }"
       >
-        <h4 class="text-h4">{{ note.title }}</h4>
+        <div class="text-h5">{{ note.title }}</div>
+
         <div class="q-mt-md text-body">{{ note.shortDesc }}</div>
-        <div class="q-mt-md">Комментариев : {{ note.comments.length }}</div>
+        <div class="q-mt-md">Комментариев : {{ getCommentsLength(id) }}</div>
       </router-link>
     </ul>
-    <div class="row justify-center q-mt-md">
-      <q-spinner size="40px" color="blue-10" v-if="loading"></q-spinner>
-    </div>
-  </q-page>
+    <div v-else class="text-h3">Нет ни одной записи</div>
+  </div>
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, computed } from 'vue';
-import { uuid } from 'vue-uuid';
+import { defineComponent, ref, onMounted } from 'vue';
+import { getNotes } from 'src/helpers/notes';
+import { getComments } from 'src/helpers/comments';
 
 export default defineComponent({
   name: 'Notes',
   setup() {
-    const defaultNote = [
-      {
-        _id: uuid.v1(),
-        title: 'Заголовок',
-        shortDesc: 'Краткое описание записи не длиннее 200 символов',
-        text: 'Длинный текст',
-        comments: [],
-      },
-    ];
-    const notesList = computed(() => {
-      const notes = window.localStorage.getItem('notes');
-      if (notes) return JSON.parse(notes);
-      return defaultNote;
-    });
-
-    const loading = ref(true);
-
-    onMounted(async () => {
-      loading.value = false;
+    const notesList = ref([]);
+    const notesLength = ref(0);
+    const comments = ref([]);
+    function getCommentsLength(id) {
+      return comments.value[id] ? comments.value[id].length : 0;
+    }
+    onMounted(() => {
+      notesList.value = getNotes();
+      comments.value = getComments();
+      notesLength.value = Object.keys(notesList.value).length;
     });
     return {
       notesList,
-      loading,
+      notesLength,
+      getCommentsLength,
     };
   },
 });
@@ -54,13 +53,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .notes__note {
-  border-radius: 10px;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 40%);
   &:hover {
     background-color: #0288d1;
-  }
-  &:active {
-    transform: translateY(1px);
   }
 }
 </style>

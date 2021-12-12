@@ -13,8 +13,6 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
-    "prettier": "^2.5.1",
-    "prettier-eslint": "^13.0.0",
     "quasar": "^2.0.0"
   },
   "devDependencies": {
@@ -25,6 +23,7 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-vue": "^7.0.0",
     "eslint-webpack-plugin": "^2.4.0",
+    "prettier-eslint": "^13.0.0",
     "vue-uuid": "^2.0.2"
   },
   "browserslist": [

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1 class="text-h4">Создание новой записи</h1>
-    <q-form class="q-mt-md row q-gutter-md" @submit.prevent="updateNotes">
+    <h1 class="text-h4">Редактирование</h1>
+    <q-form class="q-mt-md row q-gutter-md" @submit.prevent="updateCurrentNote">
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="title"
+        v-model="note.title"
         name="title"
         color="light-blue-10"
         bg-color="grey-1"
@@ -19,7 +19,7 @@
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="shortDesc"
+        v-model="note.shortDesc"
         name="title"
         color="light-blue-10"
         bg-color="grey-1"
@@ -32,7 +32,7 @@
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="text"
+        v-model="note.text"
         name="header"
         color="light-blue-10"
         error="false"
@@ -52,34 +52,31 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { addNote } from 'src/helpers/notes';
-import { useRouter } from 'vue-router';
+import { getNote, updateNote } from 'src/helpers/notes';
+import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 export default {
-  name: 'CreateNote',
-
+  name: 'Note',
   setup() {
     const router = useRouter();
-    const title = ref(null);
-    const text = ref(null);
-    const shortDesc = ref(null);
+    const noteId = useRoute().params.id;
+    const note = ref({});
 
-    function updateNotes() {
-      const newNote = {
-        title: title.value,
-        text: text.value,
-        shortDesc: shortDesc.value,
-      };
-      addNote(newNote);
-      router.push('/');
+    function updateCurrentNote() {
+      updateNote(noteId, note.value);
+      router.push({
+        name: 'note',
+        params: { id: noteId },
+      });
     }
-
+    onMounted(() => {
+      note.value = getNote(noteId);
+    });
     return {
-      title,
-      text,
-      shortDesc,
-      updateNotes,
+      note,
+      noteId,
+      updateCurrentNote,
     };
   },
 };
