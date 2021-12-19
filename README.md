@@ -6,6 +6,8 @@
 
 В проекте использовался Quasar.
 
+Не использовал Vuex из-за условия в задании использовать для хранения localStorage.
+
 ## Link
 
 [Link on GitHub Pages](https://noimanusa.github.io/Test-Blog/)
