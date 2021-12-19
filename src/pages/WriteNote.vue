@@ -12,7 +12,6 @@
         label
         outlined
         clearable
-        :error="errors.title"
       >
         <template #label> Заголовок </template>
       </q-input>
@@ -27,7 +26,6 @@
         label
         outlined
         clearable
-        :error="errors.shortDesc"
       >
         <template #label> Краткое описание </template>
       </q-input>
@@ -42,19 +40,18 @@
         outlined
         type="textarea"
         clearable
-        :error="errors.text"
       >
         <template #label> Текст записи </template>
       </q-input>
       <div class="row col-12">
-        <q-btn type="submit" color="light-blue-8" glossy>Сохранить</q-btn>
+        <q-btn :disable="disableButton" type="submit" color="light-blue-8" glossy>Сохранить</q-btn>
       </div>
     </q-form>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
@@ -67,21 +64,12 @@ export default {
     const title = ref(null);
     const text = ref(null);
     const shortDesc = ref(null);
-    const errors = ref({
-      text: false,
-      title: false,
-      shortDesc: false,
+    const disableButton = computed(() => {
+      if (!title.value || !text.value || !shortDesc.value) return true;
+      return false;
     });
 
     function updateNotes() {
-      if (!title.value || !text.value || !shortDesc.value) {
-        errors.value = {
-          text: !text.value,
-          title: !title.value,
-          shortDesc: !shortDesc.value,
-        };
-        return false;
-      }
       const newNote = {
         title: title.value,
         text: text.value,
@@ -102,7 +90,7 @@ export default {
       text,
       shortDesc,
       updateNotes,
-      errors,
+      disableButton,
     };
   },
 };

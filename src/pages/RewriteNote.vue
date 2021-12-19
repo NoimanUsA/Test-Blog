@@ -12,7 +12,6 @@
         label
         outlined
         clearable
-        :error="errors.title"
       >
         <template #label> Заголовок </template>
       </q-input>
@@ -27,7 +26,6 @@
         label
         outlined
         clearable
-        :error="errors.shortDesc"
       >
         <template #label> Краткое описание </template>
       </q-input>
@@ -42,12 +40,11 @@
         outlined
         type="textarea"
         clearable
-        :error="errors.text"
       >
         <template #label> Текст записи </template>
       </q-input>
       <div class="row col-12">
-        <q-btn type="submit" color="light-blue-8" glossy>Сохранить</q-btn>
+        <q-btn type="submit" :disable="disableButton" color="light-blue-8" glossy>Сохранить</q-btn>
       </div>
     </q-form>
   </div>
@@ -70,21 +67,12 @@ export default {
       text: note.value.text,
       shortDesc: note.value.shortDesc,
     });
-    const errors = ref({
-      text: false,
-      title: false,
-      shortDesc: false,
+    const disableButton = computed(() => {
+      if (!newData.value.title || !newData.value.text || !newData.value.shortDesc) return true;
+      return false;
     });
+
     function updateNote() {
-      const { title, text, shortDesc } = newData.value;
-      if (!title || !text || !text) {
-        errors.value = {
-          text: !text,
-          title: !title,
-          shortDesc: !shortDesc,
-        };
-        return false;
-      }
       dispatch('UPDATE_NOTE', { noteId, newData: newData.value });
       router.push({
         name: 'note',
@@ -99,7 +87,7 @@ export default {
     return {
       newData,
       updateNote,
-      errors,
+      disableButton,
     };
   },
 };
