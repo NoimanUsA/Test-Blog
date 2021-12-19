@@ -12,7 +12,7 @@
           glossy
           >Редактировать</q-btn
         >
-        <q-btn @click="removeCurrentNote" color="red-8" glossy>Удалить</q-btn>
+        <q-btn @click="removeNote" color="red-8" glossy>Удалить</q-btn>
       </div>
     </div>
     <div rounded class="note q-pa-md q-mt-md column shadow-2 text-grey-1 rounded-borders">
@@ -69,51 +69,42 @@
 </template>
 
 <script>
-import { getNote, removeNote } from 'src/helpers/notes';
-import { getNoteComments, updateComments } from 'src/helpers/comments';
-
 import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import { computed, ref, onMounted } from 'vue';
-import { uuid } from 'vue-uuid';
 
 export default {
   name: 'Note',
   setup() {
+    const { dispatch, state } = useStore();
     const router = useRouter();
     const noteId = useRoute().params.id;
-    const note = ref({});
-    const comments = ref([]);
+    const note = computed(() => (state.notes ? state.notes[noteId] : {}));
+    const comments = computed(() => (state.notes ? state.notes[noteId].comments : []));
     const newCommentAuthor = ref(null);
     const newCommentText = ref(null);
     const errors = computed(() => newCommentText.value && newCommentAuthor.value);
 
     function addNewComment() {
-      const commentId = uuid.v1();
-      comments.value.push({
+      const newComment = {
         author: newCommentAuthor.value,
         text: newCommentText.value,
-        id: commentId,
-      });
-      updateComments(noteId, comments.value);
-
+      };
+      dispatch('CREATE_COMMENT', { noteId, newComment });
       newCommentAuthor.value = null;
       newCommentText.value = null;
     }
-
-    function removeComment(id) {
-      const filtered = comments.value.filter((item) => item.id !== id);
-      comments.value = filtered;
-      updateComments(noteId, comments.value);
+    function removeComment(commentId) {
+      dispatch('REMOVE_COMMENT', { noteId, commentId });
     }
 
-    function removeCurrentNote() {
-      removeNote(noteId);
-      router.push('/');
+    function removeNote() {
+      dispatch('REMOVE_NOTE', noteId);
+      router.push('/notes');
     }
     onMounted(() => {
-      note.value = getNote(noteId);
+      dispatch('FETCH_NOTES');
       if (!note.value) router.push('/');
-      comments.value = getNoteComments(noteId);
     });
 
     return {
@@ -124,7 +115,7 @@ export default {
       newCommentText,
       addNewComment,
       removeComment,
-      removeCurrentNote,
+      removeNote,
       errors,
     };
   },

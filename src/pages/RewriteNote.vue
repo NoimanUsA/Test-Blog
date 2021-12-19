@@ -1,11 +1,11 @@
 <template>
   <div>
     <h1 class="text-h4">Редактирование</h1>
-    <q-form class="q-mt-md row q-gutter-md" @submit.prevent="updateCurrentNote">
+    <q-form class="q-mt-md row q-gutter-md" @submit.prevent="updateNote">
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="note.title"
+        v-model="newData.title"
         name="title"
         color="light-blue-10"
         bg-color="grey-1"
@@ -20,7 +20,7 @@
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="note.shortDesc"
+        v-model="newData.shortDesc"
         name="title"
         color="light-blue-10"
         bg-color="grey-1"
@@ -34,7 +34,7 @@
       <q-input
         class="col-md-8 col-11"
         dense
-        v-model="note.text"
+        v-model="newData.text"
         name="header"
         color="light-blue-10"
         bg-color="grey-1"
@@ -54,23 +54,29 @@
 </template>
 
 <script>
-import { getNote, updateNote } from 'src/helpers/notes';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
   name: 'Note',
   setup() {
+    const { dispatch, state } = useStore();
     const router = useRouter();
     const noteId = useRoute().params.id;
-    const note = ref({});
+    const note = computed(() => (state.notes ? state.notes[noteId] : {}));
+    const newData = ref({
+      title: note.value.title,
+      text: note.value.text,
+      shortDesc: note.value.shortDesc,
+    });
     const errors = ref({
       text: false,
       title: false,
       shortDesc: false,
     });
-    function updateCurrentNote() {
-      const { title, text, shortDesc } = note.value;
+    function updateNote() {
+      const { title, text, shortDesc } = newData.value;
       if (!title || !text || !text) {
         errors.value = {
           text: !text,
@@ -79,8 +85,7 @@ export default {
         };
         return false;
       }
-
-      updateNote(noteId, note.value);
+      dispatch('UPDATE_NOTE', { noteId, newData: newData.value });
       router.push({
         name: 'note',
         params: { id: noteId },
@@ -89,12 +94,11 @@ export default {
       return true;
     }
     onMounted(() => {
-      note.value = getNote(noteId);
+      dispatch('FETCH_NOTES');
     });
     return {
-      note,
-      noteId,
-      updateCurrentNote,
+      newData,
+      updateNote,
       errors,
     };
   },

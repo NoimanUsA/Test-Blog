@@ -24,24 +24,23 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue';
-import { getNotes } from 'src/helpers/notes';
-import { getComments } from 'src/helpers/comments';
+import { defineComponent, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'Notes',
   setup() {
-    const notesList = ref([]);
-    const notesLength = ref(0);
-    const comments = ref([]);
-    function getCommentsLength(id) {
-      return comments.value[id] ? comments.value[id].length : 0;
+    const { dispatch, state } = useStore();
+
+    const notesList = computed(() => state.notes || {});
+    const notesLength = computed(() => Object.keys(notesList.value).length);
+    function getCommentsLength(noteId) {
+      return notesList.value[noteId].comments.length;
     }
     onMounted(() => {
-      notesList.value = getNotes();
-      comments.value = getComments();
-      notesLength.value = Object.keys(notesList.value).length;
+      dispatch('FETCH_NOTES');
     });
+
     return {
       notesList,
       notesLength,

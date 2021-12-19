@@ -54,14 +54,15 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { addNote } from 'src/helpers/notes';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default {
   name: 'CreateNote',
 
   setup() {
+    const { dispatch } = useStore();
     const router = useRouter();
     const title = ref(null);
     const text = ref(null);
@@ -85,12 +86,17 @@ export default {
         title: title.value,
         text: text.value,
         shortDesc: shortDesc.value,
+        comments: [],
       };
-      addNote(newNote);
-      router.push('/');
+
+      dispatch('CREATE_NOTE', newNote);
+      router.push('/notes');
       return true;
     }
 
+    onMounted(() => {
+      dispatch('FETCH_NOTES');
+    });
     return {
       title,
       text,
